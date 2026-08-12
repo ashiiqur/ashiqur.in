@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Welcome Ashiqur</title>
+<style>
+  :root{
+    --glow: #7ef9ff;
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html,body{
+    height:100%;
+    font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+    overflow-x:hidden;
+    background: #060812;
+  }
+  body{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+    min-height:100vh;
+    padding: 40px 16px;
+    background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #1b1035);
+    background-size: 400% 400%;
+    animation: gradientShift 14s ease infinite;
+    position:relative;
+  }
+  @keyframes gradientShift{
+    0%{background-position:0% 50%;}
+    50%{background-position:100% 50%;}
+    100%{background-position:0% 50%;}
+  }
+
+  /* floating particles */
+  .particles{
+    position:fixed;
+    inset:0;
+    z-index:0;
+    pointer-events:none;
+  }
+  .particle{
+    position:absolute;
+    bottom:-50px;
+    width:6px;
+    height:6px;
+    background: rgba(126,249,255,0.7);
+    border-radius:50%;
+    box-shadow: 0 0 10px 2px rgba(126,249,255,0.6);
+    animation: floatUp linear infinite;
+  }
+  @keyframes floatUp{
+    0%{ transform: translateY(0) translateX(0); opacity:0; }
+    10%{ opacity:1; }
+    100%{ transform: translateY(-110vh) translateX(20px); opacity:0; }
+  }
+
+  .content{
+    position:relative;
+    z-index:2;
+    width:100%;
+    max-width:1000px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+
+  .welcome-card{
+    text-align:center;
+    padding: 30px 20px 10px;
+  }
+
+  .greeting{
+    font-size: clamp(1rem, 2.5vw, 1.4rem);
+    color: #b9c2ff;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    opacity:0;
+    animation: fadeSlideDown 1s ease forwards 0.2s;
+  }
+
+  .name{
+    font-size: clamp(2.5rem, 8vw, 5.5rem);
+    font-weight: 800;
+    background: linear-gradient(90deg, #7ef9ff, #b967ff, #ff6ec7, #7ef9ff);
+    background-size: 300% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: shine 4s linear infinite, popIn 1s ease forwards 0.4s;
+    opacity:0;
+    transform: scale(0.8);
+    text-shadow: 0 0 40px rgba(126,249,255,0.25);
+  }
+
+  @keyframes shine{
+    to{ background-position: 300% center; }
+  }
+  @keyframes popIn{
+    to{ opacity:1; transform: scale(1); }
+  }
+  @keyframes fadeSlideDown{
+    to{ opacity:1; }
+  }
+
+  .subtext{
+    margin-top: 14px;
+    color: #9aa4d1;
+    font-size: clamp(0.9rem, 1.8vw, 1.15rem);
+    opacity:0;
+    animation: fadeSlideDown 1s ease forwards 0.7s;
+  }
+
+  /* clock */
+  .clock-section{
+    margin-top: 50px;
+    width:100%;
+    text-align:center;
+  }
+
+  .clock-label{
+    font-size: clamp(0.8rem, 1.6vw, 1rem);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: #7ef9ff;
+    margin-bottom: 12px;
+    opacity: 0.85;
+  }
+
+  .big-clock{
+    font-size: clamp(3rem, 12vw, 8rem);
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: 4px;
+    text-shadow:
+      0 0 20px rgba(126,249,255,0.8),
+      0 0 45px rgba(185,103,255,0.6),
+      0 0 80px rgba(255,110,199,0.35);
+    font-variant-numeric: tabular-nums;
+    animation: pulseGlow 2.5s ease-in-out infinite;
+  }
+
+  @keyframes pulseGlow{
+    0%,100%{ text-shadow: 0 0 20px rgba(126,249,255,0.8), 0 0 45px rgba(185,103,255,0.6), 0 0 80px rgba(255,110,199,0.35); }
+    50%{ text-shadow: 0 0 35px rgba(126,249,255,1), 0 0 65px rgba(185,103,255,0.85), 0 0 110px rgba(255,110,199,0.55); }
+  }
+
+  .date-line{
+    margin-top: 10px;
+    font-size: clamp(1rem, 2.2vw, 1.4rem);
+    color: #c8cfff;
+    letter-spacing: 1px;
+  }
+
+  .tz-line{
+    margin-top: 6px;
+    font-size: clamp(0.8rem, 1.6vw, 1rem);
+    color: #7f89b8;
+  }
+
+  /* world time grid */
+  .world-grid{
+    margin-top: 50px;
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 16px;
+    width:100%;
+  }
+
+  .world-card{
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(126,249,255,0.18);
+    border-radius: 16px;
+    padding: 18px 12px;
+    text-align:center;
+    backdrop-filter: blur(6px);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  }
+
+  .world-card:hover{
+    transform: translateY(-6px);
+    border-color: rgba(126,249,255,0.6);
+    box-shadow: 0 10px 30px rgba(126,249,255,0.15);
+  }
+
+  .world-city{
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #b9c2ff;
+    margin-bottom: 8px;
+  }
+
+  .world-time{
+    font-size: clamp(1.4rem, 3vw, 1.9rem);
+    font-weight: 700;
+    color: #7ef9ff;
+    font-variant-numeric: tabular-nums;
+    text-shadow: 0 0 12px rgba(126,249,255,0.5);
+  }
+
+  .world-date{
+    margin-top: 4px;
+    font-size: 0.75rem;
+    color: #7f89b8;
+  }
+
+  footer{
+    margin-top: 60px;
+    font-size: 0.8rem;
+    color: #5c6591;
+    letter-spacing: 1px;
+    opacity:0;
+    animation: fadeSlideDown 1s ease forwards 1s;
+  }
+</style>
+</head>
+<body>
+
+<div class="particles" id="particles"></div>
+
+<div class="content">
+  <div class="welcome-card">
+    <div class="greeting">A Warm Welcome To</div>
+    <div class="name">Ashiqur</div>
+    <div class="subtext">We're delighted to have you here ✨</div>
+  </div>
+
+  <div class="clock-section">
+    <div class="clock-label">Your Local Time</div>
+    <div class="big-clock" id="bigClock">00:00:00</div>
+    <div class="date-line" id="dateLine">Loading date...</div>
+    <div class="tz-line" id="tzLine"></div>
+  </div>
+
+  <div class="world-grid" id="worldGrid"></div>
+
+  <footer>Crafted with ✦ for Ashiqur</footer>
+</div>
+
+<script>
+  // Floating particles
+  const particlesContainer = document.getElementById('particles');
+  const particleCount = 30;
+  for(let i=0;i<particleCount;i++){
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random()*100 + 'vw';
+    p.style.animationDuration = (8 + Math.random()*12) + 's';
+    p.style.animationDelay = (Math.random()*10) + 's';
+    p.style.opacity = Math.random()*0.6 + 0.2;
+    p.style.width = p.style.height = (3 + Math.random()*4) + 'px';
+    particlesContainer.appendChild(p);
+  }
+
+  // Local big clock
+  function pad(n){ return n.toString().padStart(2,'0'); }
+
+  function updateLocalClock(){
+    const now = new Date();
+    const h = pad(now.getHours());
+    const m = pad(now.getMinutes());
+    const s = pad(now.getSeconds());
+    document.getElementById('bigClock').textContent = `${h}:${m}:${s}`;
+
+    const options = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
+    document.getElementById('dateLine').textContent = now.toLocaleDateString(undefined, options);
+
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    document.getElementById('tzLine').textContent = `Time Zone: ${tz}`;
+  }
+
+  // World clocks
+  const worldZones = [
+    { city: "New York", tz: "America/New_York" },
+    { city: "London", tz: "Europe/London" },
+    { city: "Dubai", tz: "Asia/Dubai" },
+    { city: "Dhaka", tz: "Asia/Dhaka" },
+    { city: "Kolkata", tz: "Asia/Kolkata" },
+    { city: "Singapore", tz: "Asia/Singapore" },
+    { city: "Tokyo", tz: "Asia/Tokyo" },
+    { city: "Sydney", tz: "Australia/Sydney" },
+  ];
+
+  const worldGrid = document.getElementById('worldGrid');
+  worldZones.forEach(z => {
+    const card = document.createElement('div');
+    card.className = 'world-card';
+    card.innerHTML = `
+      <div class="world-city">${z.city}</div>
+      <div class="world-time" id="time-${z.tz.replace(/\//g,'-')}">--:--:--</div>
+      <div class="world-date" id="date-${z.tz.replace(/\//g,'-')}"></div>
+    `;
+    worldGrid.appendChild(card);
+  });
+
+  function updateWorldClocks(){
+    const now = new Date();
+    worldZones.forEach(z => {
+      const id = z.tz.replace(/\//g,'-');
+      const timeStr = now.toLocaleTimeString('en-US', { timeZone: z.tz, hour12:false });
+      const dateStr = now.toLocaleDateString('en-US', { timeZone: z.tz, month:'short', day:'numeric' });
+      document.getElementById('time-'+id).textContent = timeStr;
+      document.getElementById('date-'+id).textContent = dateStr;
+    });
+  }
+
+  function tick(){
+    updateLocalClock();
+    updateWorldClocks();
+  }
+
+  tick();
+  setInterval(tick, 1000);
+</script>
+
+</body>
+</html>
