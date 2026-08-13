@@ -60,8 +60,8 @@
   @media (max-width: 768px) {
     .content {
       /* Change these to whatever smaller size you want for mobile */
-      padding-top: 20px;
-      padding-bottom: 20px;
+      padding-top: 10px;
+      padding-bottom: 10px;
     }
   }
 
@@ -69,8 +69,6 @@
   .clock-section{
     width:100%;
     text-align:center;
-    opacity:0;
-    animation: rise 0.9s ease forwards;
   }
 
   .clock-label{
@@ -117,8 +115,6 @@
   .world-section{
     margin-top: 72px;
     width:100%;
-    opacity:0;
-    animation: rise 0.9s ease forwards 0.15s;
   }
 
   .world-label{
@@ -179,20 +175,9 @@
     color: var(--ink-dim);
     letter-spacing: 2px;
     text-transform: uppercase;
-    opacity:0;
-    animation: rise 0.9s ease forwards 0.3s;
   }
 
   footer a:hover{ color: var(--accent); }
-
-  @keyframes rise{
-    from{ opacity:0; transform: translateY(10px); }
-    to{ opacity:1; transform: translateY(0); }
-  }
-
-  @media (prefers-reduced-motion: reduce){
-    .clock-section, .world-section, footer{ animation:none; opacity:1; }
-  }
 </style>
 </head>
 <body>
