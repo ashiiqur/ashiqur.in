@@ -25,17 +25,22 @@
 
   html,body{ height:100%; }
 
-  body{
+ body{
     font-family:'Inter', Arial, sans-serif;
     min-height:100vh;
     display:flex;
     flex-direction:column;
     align-items:center;
-    justify-content:center;
-    padding: 60px 20px;
+    padding: 0 20px;
+    
+    /* Changed 0% to 50% to center the light vertically, and widened the glow slightly to 60% */
     background:
-      radial-gradient(ellipse at 50% 0%, #14151a 0%, var(--bg) 55%),
+      radial-gradient(ellipse at 50% 50%, #14151a 0%, var(--bg) 60%),
       var(--bg);
+      
+    /* This keeps the background perfectly locked in place even if you scroll */
+    background-attachment: fixed;
+    
     color: var(--ink);
   }
 
@@ -45,6 +50,19 @@
     display:flex;
     flex-direction:column;
     align-items:center;
+    /* This combination guarantees centering while enforcing the top and bottom space */
+    margin: auto;
+    padding-top: 1px; 
+    padding-bottom: 1px;
+  }
+
+  /* Mobile Spacing */
+  @media (max-width: 768px) {
+    .content {
+      /* Change these to whatever smaller size you want for mobile */
+      padding-top: 10px;
+      padding-bottom: 10px;
+    }
   }
 
   /* clock */
