@@ -201,28 +201,47 @@
 </div>
 
 <script>
-  function pad(n){ return n.toString().padStart(2,'0'); }
+  // Start from the browser's own timezone so the clock is correct immediately;
+  // upgraded to the IP-resolved location/timezone as soon as the lookup returns.
+  let localTZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  let localLabel = '';
 
   function updateLocalClock(){
     const now = new Date();
-    const h = pad(now.getHours());
-    const m = pad(now.getMinutes());
-    const s = pad(now.getSeconds());
-    document.getElementById('bigClock').textContent = `${h}:${m}:${s}`;
+    const timeStr = now.toLocaleTimeString('en-US', { timeZone: localTZ, hour12:false });
+    document.getElementById('bigClock').textContent = timeStr;
 
-    const options = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
-    document.getElementById('dateLine').textContent = now.toLocaleDateString(undefined, options);
+    const dateStr = now.toLocaleDateString('en-US', { timeZone: localTZ, weekday:'long', year:'numeric', month:'long', day:'numeric' });
+    document.getElementById('dateLine').textContent = dateStr;
 
-    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    document.getElementById('tzLine').textContent = `Time Zone: ${tz}`;
+    document.getElementById('tzLine').textContent = localLabel ? `${localLabel} · ${localTZ}` : localTZ;
+  }
+
+  async function detectLocation(){
+    try{
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 4000);
+      const res = await fetch('https://ipapi.co/json/', { signal: controller.signal });
+      clearTimeout(timer);
+      if(!res.ok) throw new Error('lookup failed');
+      const data = await res.json();
+      if(data && data.timezone){
+        localTZ = data.timezone;
+        localLabel = [data.city, data.country_name].filter(Boolean).join(', ');
+      }
+    }catch(err){
+      // Offline, blocked, or rate-limited — keep the browser-resolved timezone.
+    }
   }
 
   const worldZones = [
+    { city: "Los Angeles", tz: "America/Los_Angeles" },
     { city: "New York", tz: "America/New_York" },
     { city: "London", tz: "Europe/London" },
+    { city: "Paris", tz: "Europe/Paris" },
     { city: "Dubai", tz: "Asia/Dubai" },
-    { city: "Dhaka", tz: "Asia/Dhaka" },
     { city: "Kolkata", tz: "Asia/Kolkata" },
+    { city: "Dhaka", tz: "Asia/Dhaka" },
     { city: "Singapore", tz: "Asia/Singapore" },
     { city: "Tokyo", tz: "Asia/Tokyo" },
     { city: "Sydney", tz: "Australia/Sydney" },
@@ -258,6 +277,7 @@
 
   tick();
   setInterval(tick, 1000);
+  detectLocation().then(tick);
 </script>
 
 </body>
