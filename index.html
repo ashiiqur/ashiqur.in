@@ -296,6 +296,30 @@
   tick();
   setInterval(tick, 1000);
   detectLocation().then(tick);
+
+// Triple-tap redirection feature
+  let tapCount = 0;
+  let tapTimeout;
+
+  document.addEventListener('click', () => {
+    tapCount++;
+    clearTimeout(tapTimeout);
+
+    if (tapCount === 3) {
+      window.location.href = 'https://blog.ashiqur.in';
+    }
+
+    tapTimeout = setTimeout(() => {
+      tapCount = 0;
+    }, 500); // Resets tap count if 3 taps don't happen within 500ms
+  });
+
+// Prevent text selection on double/triple clicks (but allow drag selection)
+  document.addEventListener('mousedown', (e) => {
+    if (e.detail > 1) {
+      e.preventDefault();
+    }
+  });
 </script>
 
 </body>
