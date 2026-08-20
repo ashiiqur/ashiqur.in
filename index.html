@@ -130,9 +130,9 @@
       radial-gradient(circle at 50% 85%, #444444, transparent 55%);
     transition: opacity 1.4s ease;
   }
-  .revealed .page-glow{ opacity:.05; }
+  .glow-visible .page-glow{ opacity:.05; }
   @media (prefers-reduced-motion: no-preference){
-    .revealed .page-glow{
+    .glow-visible .page-glow{
       animation: blobSpin 42s linear infinite;
     }
   }
@@ -760,42 +760,46 @@
   // Local time: resolve the visitor's timezone from their IP (falling back
   // to the browser's own timezone if that lookup fails), then keep a
   // live, ticking date/time display running off the local clock.
+  var localTimeReady = Promise.resolve();
   if (localTimeEl) {
     var clockTimer = null;
 
-    function startClock(timeZone) {
-      function tick() {
-        try {
-          localTimeEl.textContent = new Date().toLocaleString('en-US', {
-            timeZone: timeZone,
-            weekday: 'short', year: 'numeric', month: 'short', day: 'numeric',
-            hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
-          });
-        } catch (e) {
-          localTimeEl.textContent = new Date().toLocaleString('en-US', {
-            weekday: 'short', year: 'numeric', month: 'short', day: 'numeric',
-            hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
-          });
+    localTimeReady = new Promise(function (resolveLocalTime) {
+      function startClock(timeZone) {
+        function tick() {
+          try {
+            localTimeEl.textContent = new Date().toLocaleString('en-US', {
+              timeZone: timeZone,
+              weekday: 'short', year: 'numeric', month: 'short', day: 'numeric',
+              hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
+            });
+          } catch (e) {
+            localTimeEl.textContent = new Date().toLocaleString('en-US', {
+              weekday: 'short', year: 'numeric', month: 'short', day: 'numeric',
+              hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
+            });
+          }
         }
+        tick();
+        clockTimer = setInterval(tick, 1000);
+        resolveLocalTime();
       }
-      tick();
-      clockTimer = setInterval(tick, 1000);
-    }
 
-    fetch('https://worldtimeapi.org/api/ip')
-      .then(function (res) { return res.json(); })
-      .then(function (data) {
-        startClock(data && data.timezone);
-      })
-      .catch(function () {
-        var fallbackZone;
-        try {
-          fallbackZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        } catch (e) {
-          fallbackZone = undefined;
-        }
-        startClock(fallbackZone);
-      });
+      fetch('https://worldtimeapi.org/api/ip')
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+          startClock(data && data.timezone);
+        })
+        .catch(function () {
+          var fallbackZone;
+          try {
+            fallbackZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+          } catch (e) {
+            fallbackZone = undefined;
+          }
+          startClock(fallbackZone);
+        });
+    });
   }
 
   var reduced = html.classList.contains('reduced-motion');
@@ -837,6 +841,11 @@
     });
   }
 
+  // Small helper: a promise that resolves after `ms` milliseconds.
+  function afterMs(ms) {
+    return new Promise(function (resolve) { setTimeout(resolve, ms); });
+  }
+
   function revealMain() {
     if (revealed) return;
     revealed = true;
@@ -848,6 +857,23 @@
       html.classList.remove('pre-reveal');
       html.classList.add('revealed');
     }, 500);
+
+    // Bring in the ambient background glow only once the profile's move
+    // into place, the content fade-in, every staggered text wipe, the
+    // local-time fetch, the avatar image, and the fonts have all finished
+    // - plus a 0.5s pause after that, so it never competes for attention.
+    var CONTAINER_ANIM_MS = 950;    // profile move/resize transition
+    var TEXT_ANIM_MS = 500 + 1000;  // reveal delay + last wipe's own delay+duration
+    Promise.all([
+      afterMs(Math.max(CONTAINER_ANIM_MS, TEXT_ANIM_MS)),
+      localTimeReady,
+      profileImgReady,
+      (document.fonts && document.fonts.ready) ? document.fonts.ready : Promise.resolve()
+    ]).then(function () {
+      afterMs(500).then(function () {
+        html.classList.add('glow-visible');
+      });
+    });
   }
 
   // Bail out of the splash entirely and just show the page normally.
@@ -856,7 +882,7 @@
     if (revealed) { return; }
     revealed = true;
     html.classList.remove('pre-reveal', 'ready');
-    html.classList.add('revealed');
+    html.classList.add('revealed', 'glow-visible');
     if (content) content.removeAttribute('inert');
     profileBtn.style.transition = 'none';
     profileBtn.style.width = '';
@@ -880,6 +906,7 @@
 
   // ashiqur.gif missing/broken -> show the pixel-art fallback instead, gif hidden.
   // ashiqur.gif loads fine -> fallback stays hidden.
+  var profileImgReady = Promise.resolve();
   if (profileImg) {
     var showAvatarFallback = function () {
       profileImg.style.display = 'none';
@@ -900,6 +927,11 @@
       } else {
         hideAvatarFallback();
       }
+    } else {
+      profileImgReady = new Promise(function (resolve) {
+        profileImg.addEventListener('load', resolve, { once: true });
+        profileImg.addEventListener('error', resolve, { once: true });
+      });
     }
   }
 
@@ -978,6 +1010,7 @@
     }
   } else {
     profileBtn.setAttribute('aria-label', 'Go to blog.ashiqur.in');
+    html.classList.add('glow-visible');
   }
 })();
 </script>
