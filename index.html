@@ -39,7 +39,7 @@
 <link rel="apple-touch-icon" href="/favicon.svg">
 <link rel="manifest" href="/site.webmanifest">
 
-<!-- Theme colour: matches the browser address bar / system nav bar to the page -->
+<!-- Theme colour: browser address bar / system nav bar to the page -->
 <meta name="theme-color" content="#060606">
 <meta name="msapplication-navbutton-color" content="#060606">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -211,10 +211,7 @@
     transform-origin: center;
   }
 
-  /* liquid fluid backdrop, revealed once the pixel dissolve finishes.
-     Sits behind the (opaque, overflow:hidden) circle now, so only the
-     glow spilling out past its edges is visible — like light escaping
-     from behind the container rather than glowing inside it. */
+  /* liquid fluid backdrop, */
   .blob{
     position:absolute;
     inset:-4%;
@@ -740,9 +737,7 @@
     }
   }
 
-  // Local time: resolve the visitor's timezone from their IP (falling back
-  // to the browser's own timezone if that lookup fails), then keep a
-  // live, ticking date/time display running off the local clock.
+  // Local time: 
   if (localTimeEl) {
     var clockTimer = null;
 
