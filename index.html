@@ -23,7 +23,7 @@
 <meta property="og:title" content="ashiqur - Ashiqur Rahman">
 <meta property="og:description" content="A B.Sc. Physics undergraduate who edits videos, listens to music, and reads informative books.">
 <meta property="og:url" content="https://ashiqur.in/">
-<meta property="og:image" content="https://ashiqur.in/a-preview-image.png">
+<meta property="og:image" content="https://ashiqur.in/preview-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:site_name" content="ashiqur">
@@ -32,14 +32,14 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="ashiqur - Ashiqur Rahman">
 <meta name="twitter:description" content="A B.Sc. Physics undergraduate who edits videos, listens to music, and reads informative books.">
-<meta name="twitter:image" content="https://ashiqur.in/a-preview-image.png">
+<meta name="twitter:image" content="https://ashiqur.in/preview-image.png">
 
 <!-- Icons -->
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/favicon.svg">
 <link rel="manifest" href="/site.webmanifest">
 
-<!-- Theme colour: browser address bar / system nav bar to the page -->
+<!-- Theme colour: matches the browser address bar / system nav bar to the page -->
 <meta name="theme-color" content="#060606">
 <meta name="msapplication-navbutton-color" content="#060606">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -73,15 +73,32 @@
     --accent: var(--text); /* used by the inline pixel-avatar fallback */
     --profile-size: 108px;
     --profile-size-splash: 168px;
+    --profile-gap: 38px;
     --ease: cubic-bezier(.16,1,.3,1);
+  }
+
+  /* Shrink the profile circle and its gap on short viewports so the header
+     + bio never need more vertical room than the screen actually has. */
+  @media (max-height: 700px){
+    :root{
+      --profile-size: 88px;
+      --profile-size-splash: 140px;
+      --profile-gap: 26px;
+    }
+  }
+  @media (max-height: 580px){
+    :root{
+      --profile-size: 68px;
+      --profile-size-splash: 116px;
+      --profile-gap: 18px;
+    }
   }
 
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   html{background:var(--bg);}
   html, body{
-    height:100%;
-    overflow:hidden;
+    min-height:100%;
   }
   body{
     color:var(--text);
@@ -121,14 +138,13 @@
   }
 
   .page{
-    height:100svh;
+    min-height:100svh;
     display:flex;
     flex-direction:column;
     align-items:center;
     justify-content:center;
     padding: 4vh 24px 3vh;
     text-align:center;
-    overflow:hidden;
   }
 
   /* ---------- Profile / splash ---------- */
@@ -136,8 +152,9 @@
   .profile-slot{
     width:var(--profile-size);
     height:var(--profile-size);
+    flex-shrink:0;
     visibility:hidden;
-    margin-bottom:38px;
+    margin-bottom:var(--profile-gap);
   }
 
   .profile{
@@ -160,7 +177,7 @@
     transition: transform .95s var(--ease), width .95s var(--ease), height .95s var(--ease);
   }
 
-  .reduced-motion .profile{ position:static; margin-bottom:38px; transform:none; }
+  .reduced-motion .profile{ position:static; margin-bottom:var(--profile-gap); transform:none; }
 
   .profile-circle{
     display:block;
@@ -211,7 +228,10 @@
     transform-origin: center;
   }
 
-  /* liquid fluid backdrop, */
+  /* liquid fluid backdrop, revealed once the pixel dissolve finishes.
+     Sits behind the (opaque, overflow:hidden) circle now, so only the
+     glow spilling out past its edges is visible — like light escaping
+     from behind the container rather than glowing inside it. */
   .blob{
     position:absolute;
     inset:-4%;
@@ -737,7 +757,9 @@
     }
   }
 
-  // Local time: 
+  // Local time: resolve the visitor's timezone from their IP (falling back
+  // to the browser's own timezone if that lookup fails), then keep a
+  // live, ticking date/time display running off the local clock.
   if (localTimeEl) {
     var clockTimer = null;
 
@@ -776,13 +798,21 @@
       });
   }
 
-  var HOME_SIZE = 108;
-  var SPLASH_SIZE = 168;
   var reduced = html.classList.contains('reduced-motion');
   var revealed = reduced; // if reduced motion, treat as already revealed
 
+  // Read the profile size straight from CSS (it shrinks on short viewports
+  // via media queries) so the fixed-position button is always exactly the
+  // size the layout reserved for it. A mismatch here is what lets the
+  // circle drift and overlap the text below it.
+  function sizeVar(name, fallback) {
+    var raw = getComputedStyle(html).getPropertyValue(name);
+    var num = parseFloat(raw);
+    return isNaN(num) ? fallback : num;
+  }
+
   function positionProfile(centered) {
-    var size = centered ? SPLASH_SIZE : HOME_SIZE;
+    var size = centered ? sizeVar('--profile-size-splash', 168) : sizeVar('--profile-size', 108);
     var x, y;
     if (centered) {
       x = window.innerWidth / 2 - size / 2;
@@ -795,6 +825,16 @@
     profileBtn.style.width = size + 'px';
     profileBtn.style.height = size + 'px';
     profileBtn.style.transform = 'translate(' + x + 'px,' + y + 'px)';
+  }
+
+  // Re-sync the button any time something could shift the slot's position:
+  // a resize, a rotation, mobile browser chrome showing/hiding, or (the
+  // main culprit) fonts finishing their swap-in after text has already
+  // been measured and positioned.
+  function scheduleReposition() {
+    requestAnimationFrame(function () {
+      positionProfile(!revealed);
+    });
   }
 
   function revealMain() {
@@ -911,9 +951,17 @@
       void profileBtn.offsetHeight; // force reflow so the 'none' takes effect
       profileBtn.style.transition = '';
 
-      window.addEventListener('resize', function () {
-        positionProfile(!revealed);
-      });
+      window.addEventListener('resize', scheduleReposition);
+      window.addEventListener('orientationchange', scheduleReposition);
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', scheduleReposition);
+      }
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(scheduleReposition);
+      }
+      if (window.ResizeObserver && content) {
+        new ResizeObserver(scheduleReposition).observe(content);
+      }
 
       window.addEventListener('load', function () {
         requestAnimationFrame(function () {
