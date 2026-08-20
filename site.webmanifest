@@ -1,0 +1,13 @@
+{
+  "name": "Ashiqur Rahman",
+  "short_name": "ashiqur",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#060606",
+  "theme_color": "#060606",
+  "description": "ashiqur - Ashiqur Rahman",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

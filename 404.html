@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+(function () {
+  var html = document.documentElement;
+  html.classList.add('js');
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  html.classList.add(reduce ? 'reduced-motion' : 'pre-reveal');
+})();
+</script>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+<title>ashiqur - Ashiqur Rahman</title>
+<meta name="description" content="Ashiqur Rahman - a B.Sc. Physics undergraduate who edits videos, listens to music, and reads informative books. Personal site.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://ashiqur.in/">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="ashiqur - Ashiqur Rahman">
+<meta property="og:description" content="A B.Sc. Physics undergraduate who edits videos, listens to music, and reads informative books.">
+<meta property="og:url" content="https://ashiqur.in/">
+<meta property="og:image" content="https://ashiqur.in/preview-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:site_name" content="ashiqur">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="ashiqur - Ashiqur Rahman">
+<meta name="twitter:description" content="A B.Sc. Physics undergraduate who edits videos, listens to music, and reads informative books.">
+<meta name="twitter:image" content="https://ashiqur.in/preview-image.png">
+
+<!-- Icons -->
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/favicon.svg">
+<link rel="manifest" href="/site.webmanifest">
+
+<!-- Theme colour: matches the browser address bar / system nav bar to the page -->
+<meta name="theme-color" content="#060606">
+<meta name="msapplication-navbutton-color" content="#060606">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "ashiqur",
+  "url": "https://ashiqur.in",
+  "description": "B.Sc. Physics undergraduate, video editor, and avid reader.",
+  "sameAs": ["https://blog.ashiqur.in"]
+}
+</script>
+
+<style>
+  :root{
+    --bg:#060606;
+    --bg-soft:#0d0d0f;
+    --text:#f2f1ec;
+    --text-dim:#8a8a8f;
+    --accent-a:#5b8cff;
+    --accent-b:#ff5b8c;
+    --accent-c:#35e0c0;
+    --accent: var(--text); /* used by the inline pixel-avatar fallback */
+    --profile-size: 108px;
+    --profile-size-splash: 168px;
+    --ease: cubic-bezier(.16,1,.3,1);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  html{background:var(--bg);}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'IBM Plex Sans', system-ui, sans-serif;
+    min-height:100svh;
+    overflow-x:hidden;
+  }
+
+  ::selection{ background:var(--accent-c); color:#060606; }
+
+  a{ color:inherit; }
+
+  :focus-visible{
+    outline:2px solid var(--accent-c);
+    outline-offset:3px;
+    border-radius:4px;
+  }
+
+  .page{
+    min-height:100svh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding: 8vh 24px 6vh;
+    text-align:center;
+  }
+
+  /* ---------- Profile / splash ---------- */
+
+  .profile-slot{
+    width:var(--profile-size);
+    height:var(--profile-size);
+    visibility:hidden;
+    margin-bottom:28px;
+  }
+
+  .profile{
+    appearance:none;
+    border:0;
+    padding:0;
+    background:none;
+    cursor:pointer;
+    width:var(--profile-size);
+    height:var(--profile-size);
+    border-radius:50%;
+    position:relative;
+    top:0; left:0;
+  }
+
+  .js .profile{
+    position:fixed;
+    z-index:50;
+    transform: translate(-999px,-999px); /* set for real by JS before paint */
+    transition: transform .95s var(--ease), width .95s var(--ease), height .95s var(--ease);
+  }
+
+  .reduced-motion .profile{ position:static; margin-bottom:28px; transform:none; }
+
+  .profile-circle{
+    display:block;
+    position:relative;
+    width:100%;
+    height:100%;
+    border-radius:50%;
+    overflow:hidden;
+    background:var(--bg);
+    isolation:isolate;
+  }
+
+  .profile-circle img{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+
+  /* shown only if ashiqur.gif fails to load */
+  .avatar-fallback{
+    position:absolute;
+    inset:0;
+    display:none;
+  }
+  .avatar-fallback.show{ display:block; }
+  .avatar-fallback svg{
+    display:block;
+    width:100%;
+    height:100%;
+  }
+
+  /* liquid fluid backdrop, revealed once the pixel dissolve finishes */
+  .blob{
+    position:absolute;
+    inset:-55%;
+    z-index:-1;
+    border-radius:44% 56% 62% 38% / 41% 44% 56% 59%;
+    filter: blur(22px);
+    opacity:0;
+    background: conic-gradient(from 0deg, var(--accent-a), var(--accent-b), var(--accent-c), var(--accent-a));
+    transition: opacity .9s ease;
+  }
+  .js.blob-visible .blob{ opacity:.6; }
+
+  @media (prefers-reduced-motion: no-preference){
+    .js.blob-visible .blob{
+      animation: blobSpin 9s linear infinite, blobMorph 7s ease-in-out infinite alternate;
+    }
+  }
+  @keyframes blobSpin{ to{ transform:rotate(360deg); } }
+  @keyframes blobMorph{
+    0%{ border-radius:44% 56% 62% 38% / 41% 44% 56% 59%; }
+    50%{ border-radius:60% 40% 32% 68% / 62% 32% 68% 38%; }
+    100%{ border-radius:44% 56% 62% 38% / 41% 44% 56% 59%; }
+  }
+
+  /* pixel-square dissolve overlay */
+  .pixels{
+    position:absolute;
+    inset:0;
+    display:grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: repeat(7, 1fr);
+    z-index:2;
+  }
+  .pixels span{
+    background:var(--bg);
+    opacity:1;
+  }
+  .js .pixels span.out{
+    animation: pixelOut .32s ease forwards;
+  }
+  @keyframes pixelOut{
+    to{ opacity:0; transform:scale(0.15); }
+  }
+  .reduced-motion .pixels{ display:none; }
+
+  .tap-hint{
+    margin-top:16px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:.72rem;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--text-dim);
+    opacity:0;
+    transition: opacity .6s ease;
+  }
+  .js.ready .tap-hint{ opacity:.85; }
+  .js.pre-reveal .tap-hint{
+    position:fixed;
+    left:50%;
+    bottom:9vh;
+    transform:translateX(-50%);
+  }
+  .reduced-motion .tap-hint, .revealed .tap-hint{ display:none; }
+
+  /* ---------- Main content ---------- */
+
+  .content{
+    max-width:560px;
+    opacity:1;
+    transform:translateY(0);
+    transition: opacity .7s ease, transform .7s ease;
+  }
+  .js.pre-reveal .content{ opacity:0; transform:translateY(14px); }
+
+  .tags{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:.72rem;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--text-dim);
+    margin:0 0 18px;
+  }
+  .tags span:not(:last-child)::after{
+    content:'·';
+    margin:0 8px;
+    color:var(--accent-c);
+  }
+
+  h1{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:700;
+    font-size:clamp(2.4rem, 7vw, 3.6rem);
+    letter-spacing:-.02em;
+    margin:0 0 6px;
+  }
+
+  .role{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:500;
+    font-size:1.05rem;
+    color:var(--text-dim);
+    margin:0 0 22px;
+  }
+
+  p.bio{
+    font-size:1.02rem;
+    line-height:1.65;
+    color:#d8d7d2;
+    margin:0 0 30px;
+  }
+
+  .blog-line{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:.92rem;
+    color:var(--text-dim);
+  }
+  .blog-line a{
+    color:var(--text);
+    text-decoration:none;
+    border-bottom:1px solid var(--accent-c);
+    padding-bottom:1px;
+  }
+  .blog-line a:hover{ color:var(--accent-c); }
+
+  footer{
+    margin-top:60px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:.68rem;
+    color:#4a4a50;
+    letter-spacing:.05em;
+  }
+
+  /* wipe reveal, like a video edit transition */
+  .wipe{
+    position:relative;
+    display:inline-block;
+    overflow:hidden;
+  }
+  .wipe::after{
+    content:'';
+    position:absolute;
+    inset:0;
+    background:var(--bg);
+    transform-origin:right;
+    transform:scaleX(0);
+  }
+  .js.pre-reveal .wipe::after{ transform:scaleX(1); }
+  @media (prefers-reduced-motion: no-preference){
+    .js .wipe::after{ transition: transform .7s var(--ease); }
+  }
+  .wipe.d1::after{ transition-delay: 0ms; }
+  .wipe.d2::after{ transition-delay: 90ms; }
+  .wipe.d3::after{ transition-delay: 180ms; }
+  .wipe.d4::after{ transition-delay: 300ms; }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <div class="profile-slot" id="profileSlot" aria-hidden="true"></div>
+
+  <button type="button" class="profile" id="profileBtn" aria-label="Enter the site">
+    <span class="profile-circle">
+      <img src="ashiqur.gif" alt="ashiqur" width="168" height="168" id="profileImg">
+      <span class="avatar-fallback" id="avatarFallback">
+        <svg id="avatar-pixel-svg" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" role="img" aria-label="Pixel portrait of ashiqur">
+        <g fill="var(--accent, #2d4159)">
+        <rect x="14" y="0" width="1" height="1" fill-opacity="0.01"/>
+        <rect x="12" y="1" width="1" height="1" fill-opacity="0.01"/>
+        <rect x="16" y="1" width="2" height="1" fill-opacity="0.01"/>
+        <rect x="11" y="2" width="1" height="1" fill-opacity="0.01"/>
+        <rect x="13" y="2" width="1" height="1" fill-opacity="0.04"/>
+        <rect x="14" y="2" width="1" height="1" fill-opacity="0.13"/>
+        <rect x="15" y="2" width="1" height="1" fill-opacity="0.08"/>
+        <rect x="10" y="3" width="1" height="1" fill-opacity="0.01"/>
+        <rect x="12" y="3" width="1" height="1" fill-opacity="0.17"/>
+        <rect x="13" y="3" width="1" height="1" fill-opacity="0.85"/>
+        <rect x="14" y="3" width="1" height="1" fill-opacity="0.98"/>
+        <rect x="15" y="3" width="1" height="1" fill-opacity="0.93"/>
+        <rect x="16" y="3" width="1" height="1" fill-opacity="0.72"/>
+        <rect x="17" y="3" width="1" height="1" fill-opacity="0.25"/>
+        <rect x="9" y="4" width="1" height="1" fill-opacity="0.01"/>
+        <rect x="11" y="4" width="1" height="1" fill-opacity="0.17"/>
+        <rect x="12" y="4" width="1" height="1" fill-opacity="0.91"/>
+        <rect x="13" y="4" width="4" height="1"/>
+        <rect x="17" y="4" width="1" height="1" fill-opacity="0.98"/>
+        <rect x="18" y="4" width="1" height="1" fill-opacity="0.13"/>
+        <rect x="20" y="4" width="1" height="1" fill-opacity="0.01"/>
+        <rect x="9" y="5" width="1" height="1" fill-opacity="0.01"/>
+        <rect x="11" y="5" width="1" height="1" fill-opacity="0.71"/>
+        <rect x="12" y="5" width="1" height="1"/>
+        <rect x="13" y="5" width="1" height="1" fill-opacity="0.98"/>
+        <rect x="14" y="5" width="2" height="1"/>
+        <rect x="16" y="5" width="1" height="1" fill-opacity="0.97"/>
+        <rect x="17" y="5" width="1" height="1"/>
+        <rect x="18" y="5" width="1" height="1" fill-opacity="0.41"/>
+        <rect x="20" y="5" width="1" height="1" fill-opacity="0.02"/>
+        <rect x="9" y="6" width="1" height="1" fill-opacity="0.01"/>
+        <rect x="11" y="6" width="1" height="1" fill-opacity="0.53"/>
+        <rect x="12" y="6" width="1" height="1"/>
+        <rect x="13" y="6" width="1" height="1" fill-opacity="0.99"/>
+        <rect x="14" y="6" width="2" height="1"/>
+        <rect x="16" y="6" width="1" height="1" fill-opacity="0.98"/>
+        <rect x="17" y="6" width="1" height="1"/>
+        <rect x="18" y="6" width="1" height="1" fill-opacity="0.54"/>
+        <rect x="20" y="6" width="1" height="1" fill-opacity="0.02"/>
+        <rect x="12" y="7" width="1" height="1" fill-opacity="0.84"/>
+        <rect x="13" y="7" width="1" height="1"/>
+        <rect x="14" y="7" width="1" height="1" fill-opacity="0.99"/>
+        <rect x="15" y="7" width="1" height="1"/>
+        <rect x="16" y="7" width="1" height="1" fill-opacity="0.98"/>
+        <rect x="17" y="7" width="1" height="1"/>
+        <rect x="18" y="7" width="1" height="1" fill-opacity="0.45"/>
+        <rect x="20" y="7" width="1" height="1" fill-opacity="0.02"/>
+        <rect x="11" y="8" width="1" height="1" fill-opacity="0.03"/>
+        <rect x="12" y="8" width="1" height="1" fill-opacity="0.83"/>
+        <rect x="13" y="8" width="1" height="1"/>
+        <rect x="14" y="8" width="1" height="1" fill-opacity="0.99"/>
+        <rect x="15" y="8" width="2" height="1"/>
+        <rect x="17" y="8" width="1" height="1" fill-opacity="0.96"/>
+        <rect x="18" y="8" width="1" height="1" fill-opacity="0.13"/>
+        <rect x="20" y="8" width="1" height="1" fill-opacity="0.01"/>
+        <rect x="10" y="9" width="2" height="1" fill-opacity="0.01"/>
+        <rect x="12" y="9" width="1" height="1" fill-opacity="0.66"/>
+        <rect x="13" y="9" width="2" height="1" fill-opacity="0.99"/>
+        <rect x="15" y="9" width="1" height="1" fill-opacity="0.98"/>
+        <rect x="16" y="9" width="1" height="1"/>
+        <rect x="17" y="9" width="1" height="1" fill-opacity="0.56"/>
+        <rect x="19" y="9" width="1" height="1" fill-opacity="0.01"/>
+        <rect x="10" y="10" width="1" height="1" fill-opacity="0.02"/>
+        <rect x="12" y="10" width="1" height="1" fill-opacity="0.48"/>
+        <rect x="13" y="10" width="1" height="1"/>
+        <rect x="14" y="10" width="1" height="1" fill-opacity="0.98"/>
+        <rect x="15" y="10" width="2" height="1"/>
+        <rect x="17" y="10" width="1" height="1" fill-opacity="0.17"/>
+        <rect x="18" y="10" width="1" height="1" fill-opacity="0.02"/>
+        <rect x="19" y="10" width="1" height="1" fill-opacity="0.01"/>
+        <rect x="10" y="11" width="1" height="1" fill-opacity="0.02"/>
+        <rect x="12" y="11" width="1" height="1" fill-opacity="0.04"/>
+        <rect x="13" y="11" width="1" height="1" fill-opacity="0.26"/>
+        <rect x="14" y="11" width="1" height="1" fill-opacity="0.87"/>
+        <rect x="15" y="11" width="2" height="1"/>
+        <rect x="17" y="11" width="1" height="1" fill-opacity="0.33"/>
+        <rect x="20" y="11" width="1" height="1" fill-opacity="0.02"/>
+        <rect x="21" y="11" width="1" height="1" fill-opacity="0.01"/>
+        <rect x="11" y="12" width="1" height="1" fill-opacity="0.01"/>
+        <rect x="12" y="12" width="1" height="1" fill-opacity="0.2"/>
+        <rect x="13" y="12" width="1" height="1" fill-opacity="0.58"/>
+        <rect x="14" y="12" width="2" height="1" fill-opacity="0.99"/>
+        <rect x="16" y="12" width="1" height="1"/>
+        <rect x="17" y="12" width="1" height="1" fill-opacity="0.92"/>
+        <rect x="18" y="12" width="1" height="1" fill-opacity="0.36"/>
+        <rect x="19" y="12" width="1" height="1" fill-opacity="0.05"/>
+        <rect x="22" y="12" width="1" height="1" fill-opacity="0.01"/>
+        <rect x="8" y="13" width="1" height="1" fill-opacity="0.01"/>
+        <rect x="10" y="13" width="1" height="1" fill-opacity="0.4"/>
+        <rect x="11" y="13" width="1" height="1" fill-opacity="0.82"/>
+        <rect x="12" y="13" width="7" height="1"/>
+        <rect x="19" y="13" width="1" height="1" fill-opacity="0.88"/>
+        <rect x="20" y="13" width="1" height="1" fill-opacity="0.56"/>
+        <rect x="21" y="13" width="1" height="1" fill-opacity="0.15"/>
+        <rect x="7" y="14" width="1" height="1" fill-opacity="0.01"/>
+        <rect x="9" y="14" width="1" height="1" fill-opacity="0.53"/>
+        <rect x="10" y="14" width="3" height="1"/>
+        <rect x="13" y="14" width="1" height="1" fill-opacity="0.99"/>
+        <rect x="14" y="14" width="4" height="1"/>
+        <rect x="18" y="14" width="1" height="1" fill-opacity="0.99"/>
+        <rect x="19" y="14" width="2" height="1"/>
+        <rect x="21" y="14" width="1" height="1" fill-opacity="0.95"/>
+        <rect x="22" y="14" width="1" height="1" fill-opacity="0.26"/>
+        <rect x="24" y="14" width="1" height="1" fill-opacity="0.01"/>
+        <rect x="6" y="15" width="1" height="1" fill-opacity="0.01"/>
+        <rect x="8" y="15" width="1" height="1" fill-opacity="0.15"/>
+        <rect x="9" y="15" width="1" height="1"/>
+        <rect x="10" y="15" width="2" height="1" fill-opacity="0.99"/>
+        <rect x="12" y="15" width="8" height="1"/>
+        <rect x="20" y="15" width="1" height="1" fill-opacity="0.97"/>
+        <rect x="21" y="15" width="1" height="1"/>
+        <rect x="22" y="15" width="1" height="1" fill-opacity="0.78"/>
+        <rect x="24" y="15" width="1" height="1" fill-opacity="0.01"/>
+        <rect x="6" y="16" width="1" height="1" fill-opacity="0.02"/>
+        <rect x="8" y="16" width="1" height="1" fill-opacity="0.42"/>
+        <rect x="9" y="16" width="1" height="1"/>
+        <rect x="10" y="16" width="1" height="1" fill-opacity="0.98"/>
+        <rect x="11" y="16" width="11" height="1"/>
+        <rect x="22" y="16" width="1" height="1" fill-opacity="0.91"/>
+        <rect x="23" y="16" width="1" height="1" fill-opacity="0.05"/>
+        <rect x="6" y="17" width="1" height="1" fill-opacity="0.02"/>
+        <rect x="8" y="17" width="1" height="1" fill-opacity="0.51"/>
+        <rect x="9" y="17" width="1" height="1"/>
+        <rect x="10" y="17" width="2" height="1" fill-opacity="0.98"/>
+        <rect x="12" y="17" width="1" height="1" fill-opacity="0.99"/>
+        <rect x="13" y="17" width="6" height="1"/>
+        <rect x="19" y="17" width="3" height="1" fill-opacity="0.99"/>
+        <rect x="22" y="17" width="1" height="1" fill-opacity="0.95"/>
+        <rect x="23" y="17" width="1" height="1" fill-opacity="0.1"/>
+        <rect x="6" y="18" width="2" height="1" fill-opacity="0.01"/>
+        <rect x="8" y="18" width="1" height="1" fill-opacity="0.79"/>
+        <rect x="9" y="18" width="1" height="1" fill-opacity="0.98"/>
+        <rect x="10" y="18" width="1" height="1" fill-opacity="0.99"/>
+        <rect x="11" y="18" width="7" height="1"/>
+        <rect x="18" y="18" width="1" height="1" fill-opacity="0.99"/>
+        <rect x="19" y="18" width="3" height="1"/>
+        <rect x="22" y="18" width="1" height="1" fill-opacity="0.97"/>
+        <rect x="23" y="18" width="1" height="1" fill-opacity="0.06"/>
+        <rect x="6" y="19" width="1" height="1" fill-opacity="0.01"/>
+        <rect x="8" y="19" width="1" height="1" fill-opacity="0.48"/>
+        <rect x="9" y="19" width="1" height="1"/>
+        <rect x="10" y="19" width="1" height="1" fill-opacity="0.99"/>
+        <rect x="11" y="19" width="1" height="1" fill-opacity="0.38"/>
+        <rect x="12" y="19" width="1" height="1" fill-opacity="0.76"/>
+        <rect x="13" y="19" width="1" height="1"/>
+        <rect x="14" y="19" width="2" height="1" fill-opacity="0.99"/>
+        <rect x="16" y="19" width="3" height="1"/>
+        <rect x="19" y="19" width="1" height="1" fill-opacity="0.69"/>
+        <rect x="20" y="19" width="1" height="1" fill-opacity="0.79"/>
+        <rect x="21" y="19" width="1" height="1" fill-opacity="0.63"/>
+        <rect x="22" y="19" width="1" height="1" fill-opacity="0.79"/>
+        <rect x="23" y="19" width="1" height="1" fill-opacity="0.26"/>
+        <rect x="25" y="19" width="1" height="1" fill-opacity="0.01"/>
+        <rect x="8" y="20" width="1" height="1" fill-opacity="0.03"/>
+        <rect x="9" y="20" width="1" height="1" fill-opacity="0.63"/>
+        <rect x="10" y="20" width="1" height="1" fill-opacity="0.91"/>
+        <rect x="11" y="20" width="1" height="1" fill-opacity="0.37"/>
+        <rect x="12" y="20" width="1" height="1" fill-opacity="0.48"/>
+        <rect x="13" y="20" width="4" height="1"/>
+        <rect x="17" y="20" width="1" height="1" fill-opacity="0.44"/>
+        <rect x="18" y="20" width="1" height="1" fill-opacity="0.8"/>
+        <rect x="19" y="20" width="1" height="1" fill-opacity="0.2"/>
+        <rect x="20" y="20" width="1" height="1" fill-opacity="0.33"/>
+        <rect x="21" y="20" width="1" height="1" fill-opacity="0.4"/>
+        <rect x="22" y="20" width="1" height="1" fill-opacity="0.77"/>
+        <rect x="23" y="20" width="1" height="1" fill-opacity="0.76"/>
+        <rect x="25" y="20" width="1" height="1" fill-opacity="0.01"/>
+        <rect x="10" y="21" width="1" height="1" fill-opacity="0.88"/>
+        <rect x="11" y="21" width="1" height="1" fill-opacity="0.93"/>
+        <rect x="12" y="21" width="1" height="1" fill-opacity="0.86"/>
+        <rect x="13" y="21" width="1" height="1" fill-opacity="0.64"/>
+        <rect x="14" y="21" width="1" height="1" fill-opacity="0.24"/>
+        <rect x="15" y="21" width="1" height="1" fill-opacity="0.8"/>
+        <rect x="16" y="21" width="1" height="1"/>
+        <rect x="17" y="21" width="1" height="1" fill-opacity="0.19"/>
+        <rect x="18" y="21" width="1" height="1" fill-opacity="0.25"/>
+        <rect x="19" y="21" width="1" height="1" fill-opacity="0.46"/>
+        <rect x="20" y="21" width="1" height="1" fill-opacity="0.76"/>
+        <rect x="21" y="21" width="1" height="1" fill-opacity="0.66"/>
+        <rect x="22" y="21" width="1" height="1" fill-opacity="0.17"/>
+        <rect x="23" y="21" width="1" height="1" fill-opacity="0.24"/>
+        <rect x="8" y="22" width="1" height="1" fill-opacity="0.01"/>
+        <rect x="9" y="22" width="1" height="1" fill-opacity="0.31"/>
+        <rect x="10" y="22" width="1" height="1" fill-opacity="0.47"/>
+        <rect x="11" y="22" width="1" height="1" fill-opacity="0.3"/>
+        <rect x="12" y="22" width="1" height="1" fill-opacity="0.98"/>
+        <rect x="13" y="22" width="1" height="1" fill-opacity="0.69"/>
+        <rect x="14" y="22" width="1" height="1" fill-opacity="0.25"/>
+        <rect x="15" y="22" width="1" height="1" fill-opacity="0.17"/>
+        <rect x="16" y="22" width="1" height="1" fill-opacity="0.94"/>
+        <rect x="17" y="22" width="1" height="1" fill-opacity="0.65"/>
+        <rect x="18" y="22" width="1" height="1" fill-opacity="0.24"/>
+        <rect x="19" y="22" width="1" height="1" fill-opacity="0.85"/>
+        <rect x="20" y="22" width="1" height="1" fill-opacity="0.84"/>
+        <rect x="21" y="22" width="1" height="1" fill-opacity="0.25"/>
+        <rect x="22" y="22" width="1" height="1" fill-opacity="0.58"/>
+        <rect x="23" y="22" width="1" height="1" fill-opacity="0.17"/>
+        <rect x="25" y="22" width="1" height="1" fill-opacity="0.01"/>
+        <rect x="7" y="23" width="1" height="1" fill-opacity="0.01"/>
+        <rect x="9" y="23" width="1" height="1" fill-opacity="0.53"/>
+        <rect x="10" y="23" width="1" height="1" fill-opacity="0.23"/>
+        <rect x="11" y="23" width="1" height="1" fill-opacity="0.05"/>
+        <rect x="12" y="23" width="1" height="1" fill-opacity="0.99"/>
+        <rect x="13" y="23" width="1" height="1"/>
+        <rect x="14" y="23" width="1" height="1" fill-opacity="0.6"/>
+        <rect x="16" y="23" width="1" height="1" fill-opacity="0.56"/>
+        <rect x="17" y="23" width="1" height="1" fill-opacity="0.87"/>
+        <rect x="18" y="23" width="1" height="1" fill-opacity="0.11"/>
+        <rect x="19" y="23" width="1" height="1"/>
+        <rect x="20" y="23" width="1" height="1" fill-opacity="0.71"/>
+        <rect x="22" y="23" width="1" height="1" fill-opacity="0.24"/>
+        <rect x="23" y="23" width="1" height="1" fill-opacity="0.07"/>
+        <rect x="10" y="24" width="1" height="1" fill-opacity="0.22"/>
+        <rect x="11" y="24" width="1" height="1" fill-opacity="0.05"/>
+        <rect x="12" y="24" width="1" height="1" fill-opacity="0.92"/>
+        <rect x="13" y="24" width="2" height="1"/>
+        <rect x="15" y="24" width="1" height="1" fill-opacity="0.03"/>
+        <rect x="16" y="24" width="1" height="1" fill-opacity="0.48"/>
+        <rect x="17" y="24" width="1" height="1" fill-opacity="0.98"/>
+        <rect x="18" y="24" width="1" height="1" fill-opacity="0.03"/>
+        <rect x="19" y="24" width="1" height="1" fill-opacity="0.47"/>
+        <rect x="20" y="24" width="1" height="1" fill-opacity="0.64"/>
+        <rect x="21" y="24" width="1" height="1" fill-opacity="0.26"/>
+        <rect x="22" y="24" width="1" height="1" fill-opacity="0.07"/>
+        <rect x="23" y="24" width="1" height="1" fill-opacity="0.02"/>
+        <rect x="11" y="25" width="1" height="1" fill-opacity="0.01"/>
+        <rect x="12" y="25" width="1" height="1" fill-opacity="0.44"/>
+        <rect x="13" y="25" width="1" height="1" fill-opacity="0.97"/>
+        <rect x="14" y="25" width="1" height="1" fill-opacity="0.84"/>
+        <rect x="15" y="25" width="1" height="1" fill-opacity="0.26"/>
+        <rect x="16" y="25" width="1" height="1" fill-opacity="0.95"/>
+        <rect x="17" y="25" width="1" height="1"/>
+        <rect x="18" y="25" width="1" height="1" fill-opacity="0.17"/>
+        <rect x="19" y="25" width="1" height="1" fill-opacity="0.58"/>
+        <rect x="20" y="25" width="1" height="1" fill-opacity="0.18"/>
+        <rect x="21" y="25" width="1" height="1" fill-opacity="0.12"/>
+        <rect x="9" y="26" width="1" height="1" fill-opacity="0.03"/>
+        <rect x="10" y="26" width="1" height="1" fill-opacity="0.87"/>
+        <rect x="11" y="26" width="1" height="1" fill-opacity="0.41"/>
+        <rect x="12" y="26" width="1" height="1" fill-opacity="0.15"/>
+        <rect x="13" y="26" width="1" height="1" fill-opacity="0.41"/>
+        <rect x="14" y="26" width="1" height="1" fill-opacity="0.24"/>
+        <rect x="15" y="26" width="1" height="1" fill-opacity="0.61"/>
+        <rect x="16" y="26" width="2" height="1"/>
+        <rect x="18" y="26" width="1" height="1" fill-opacity="0.24"/>
+        <rect x="19" y="26" width="1" height="1" fill-opacity="0.15"/>
+        <rect x="20" y="26" width="1" height="1" fill-opacity="0.05"/>
+        <rect x="9" y="27" width="1" height="1" fill-opacity="0.01"/>
+        <rect x="10" y="27" width="1" height="1" fill-opacity="0.45"/>
+        <rect x="11" y="27" width="1" height="1" fill-opacity="0.14"/>
+        <rect x="12" y="27" width="1" height="1" fill-opacity="0.12"/>
+        <rect x="13" y="27" width="1" height="1" fill-opacity="0.09"/>
+        <rect x="15" y="27" width="1" height="1" fill-opacity="0.83"/>
+        <rect x="16" y="27" width="2" height="1"/>
+        <rect x="18" y="27" width="1" height="1" fill-opacity="0.14"/>
+        <rect x="14" y="28" width="1" height="1" fill-opacity="0.17"/>
+        <rect x="15" y="28" width="1" height="1" fill-opacity="0.88"/>
+        <rect x="16" y="28" width="1" height="1" fill-opacity="0.82"/>
+        <rect x="17" y="28" width="1" height="1" fill-opacity="0.5"/>
+        <rect x="19" y="28" width="1" height="1" fill-opacity="0.01"/>
+        <rect x="9" y="29" width="1" height="1" fill-opacity="0.01"/>
+        <rect x="10" y="29" width="1" height="1" fill-opacity="0.02"/>
+        <rect x="11" y="29" width="1" height="1" fill-opacity="0.1"/>
+        <rect x="12" y="29" width="1" height="1" fill-opacity="0.9"/>
+        <rect x="13" y="29" width="1" height="1" fill-opacity="0.31"/>
+        <rect x="14" y="29" width="1" height="1" fill-opacity="0.09"/>
+        <rect x="15" y="29" width="1" height="1" fill-opacity="0.08"/>
+        <rect x="16" y="29" width="1" height="1" fill-opacity="0.34"/>
+        <rect x="17" y="29" width="1" height="1" fill-opacity="0.29"/>
+        <rect x="19" y="29" width="1" height="1" fill-opacity="0.01"/>
+        <rect x="11" y="30" width="1" height="1" fill-opacity="0.04"/>
+        <rect x="12" y="30" width="1" height="1" fill-opacity="0.45"/>
+        <rect x="13" y="30" width="2" height="1" fill-opacity="0.11"/>
+        <rect x="16" y="30" width="1" height="1" fill-opacity="0.35"/>
+        <rect x="17" y="30" width="1" height="1" fill-opacity="0.36"/>
+        <rect x="19" y="30" width="1" height="1" fill-opacity="0.01"/>
+        <rect x="14" y="31" width="1" height="1" fill-opacity="0.14"/>
+        <rect x="15" y="31" width="1" height="1" fill-opacity="0.03"/>
+        </g>
+        </svg>
+      </span>
+      <span class="blob" aria-hidden="true"></span>
+      <span class="pixels" id="pixelGrid" aria-hidden="true"></span>
+    </span>
+  </button>
+
+  <p class="tap-hint" id="tapHint">Tap to enter</p>
+
+  <main class="content" id="content">
+    <p class="tags">
+      <span>Physics</span><span>Video Editing</span><span>Music</span><span>Reading</span>
+    </p>
+
+    <h1><span class="wipe d1">Ashiqur Rahman</span></h1>
+    <p class="role"><span class="wipe d2">B.Sc. Physics Undergraduate</span></p>
+
+    <p class="bio">
+      <span class="wipe d3">I'm studying physics as an undergraduate, and outside of that I spend most of
+      my time editing videos, listening to music, and reading anything that
+      teaches me something new — from popular science to whatever's next on
+      the shelf.</span>
+    </p>
+
+    <p class="blog-line">
+      <span class="wipe d4">More at <a href="https://blog.ashiqur.in" id="blogLink">blog.ashiqur.in</a></span>
+    </p>
+
+    <footer>© <span id="year"></span> ashiqur</footer>
+  </main>
+
+</div>
+
+<script>
+(function () {
+  var html = document.documentElement;
+  var profileBtn = document.getElementById('profileBtn');
+  var slot = document.getElementById('profileSlot');
+  var content = document.getElementById('content');
+  var pixelGrid = document.getElementById('pixelGrid');
+  var blogLink = document.getElementById('blogLink');
+  var profileImg = document.getElementById('profileImg');
+  var avatarFallback = document.getElementById('avatarFallback');
+  var yearEl = document.getElementById('year');
+
+  if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+  var HOME_SIZE = 108;
+  var SPLASH_SIZE = 168;
+  var reduced = html.classList.contains('reduced-motion');
+  var revealed = reduced; // if reduced motion, treat as already revealed
+
+  function positionProfile(centered) {
+    var size = centered ? SPLASH_SIZE : HOME_SIZE;
+    var x, y;
+    if (centered) {
+      x = window.innerWidth / 2 - size / 2;
+      y = window.innerHeight / 2 - size / 2;
+    } else {
+      var r = slot.getBoundingClientRect();
+      x = r.left;
+      y = r.top;
+    }
+    profileBtn.style.width = size + 'px';
+    profileBtn.style.height = size + 'px';
+    profileBtn.style.transform = 'translate(' + x + 'px,' + y + 'px)';
+  }
+
+  function revealMain() {
+    if (revealed) return;
+    revealed = true;
+    html.classList.remove('ready');
+    if (content) content.removeAttribute('inert');
+    profileBtn.setAttribute('aria-label', 'Go to blog.ashiqur.in');
+    positionProfile(false);
+    setTimeout(function () {
+      html.classList.remove('pre-reveal');
+      html.classList.add('revealed');
+    }, 500);
+  }
+
+  // Bail out of the splash entirely and just show the page normally.
+  // Runs only if the splash script itself throws.
+  function forceReveal() {
+    if (revealed) { return; }
+    revealed = true;
+    html.classList.remove('pre-reveal', 'ready');
+    html.classList.add('revealed');
+    if (content) content.removeAttribute('inert');
+    profileBtn.style.transition = 'none';
+    profileBtn.style.width = '';
+    profileBtn.style.height = '';
+    profileBtn.style.transform = 'none';
+    profileBtn.style.position = 'static';
+    profileBtn.style.marginBottom = '28px';
+    profileBtn.setAttribute('aria-label', 'Go to blog.ashiqur.in');
+  }
+
+  // --- Core interactions: attached first and unconditionally, so a splash
+  // failure below can never prevent tapping the profile or the blog link. ---
+
+  profileBtn.addEventListener('click', function () {
+    if (!revealed) {
+      revealMain();
+    } else {
+      window.location.href = 'https://blog.ashiqur.in';
+    }
+  });
+
+  // ashiqur.gif missing/broken -> show the pixel-art fallback instead, gif hidden.
+  // ashiqur.gif loads fine -> fallback stays hidden.
+  if (profileImg) {
+    var showAvatarFallback = function () {
+      profileImg.style.display = 'none';
+      if (avatarFallback) avatarFallback.classList.add('show');
+    };
+    var hideAvatarFallback = function () {
+      if (avatarFallback) avatarFallback.classList.remove('show');
+    };
+    profileImg.addEventListener('error', showAvatarFallback);
+    profileImg.addEventListener('load', hideAvatarFallback);
+    // On a local file the browser can settle this request before this
+    // script block even runs, so the events above may already have fired
+    // and been missed. `complete` is true either way once settled;
+    // naturalWidth is 0 only on a genuine failure.
+    if (profileImg.complete) {
+      if (profileImg.naturalWidth === 0) {
+        showAvatarFallback();
+      } else {
+        hideAvatarFallback();
+      }
+    }
+  }
+
+  // Triple-tap anywhere on the page (but not on the blog link, which is
+  // already a normal link) redirects to the blog. Only active once the
+  // splash has been dismissed and the main page is showing.
+  var pageTaps = [];
+  document.addEventListener('click', function (e) {
+    if (!revealed) return;
+    if (blogLink.contains(e.target)) return;
+    var now = Date.now();
+    pageTaps.push(now);
+    pageTaps = pageTaps.filter(function (t) { return now - t < 1500; });
+    if (pageTaps.length >= 3) {
+      pageTaps = [];
+      window.location.href = 'https://blog.ashiqur.in';
+    }
+  });
+
+  // --- Splash visuals: best-effort. Any failure here falls back safely. ---
+
+  if (!reduced) {
+    try {
+      if (content) content.setAttribute('inert', '');
+
+      var total = 49;
+      var frag = document.createDocumentFragment();
+      for (var i = 0; i < total; i++) {
+        var cell = document.createElement('span');
+        cell.style.animationDelay = (Math.random() * 650) + 'ms';
+        frag.appendChild(cell);
+      }
+      pixelGrid.appendChild(frag);
+
+      positionProfile(true);
+
+      window.addEventListener('resize', function () {
+        positionProfile(!revealed);
+      });
+
+      window.addEventListener('load', function () {
+        requestAnimationFrame(function () {
+          var cells = pixelGrid.querySelectorAll('span');
+          cells.forEach(function (c) { c.classList.add('out'); });
+          setTimeout(function () {
+            html.classList.add('blob-visible', 'ready');
+          }, 950);
+        });
+      });
+    } catch (err) {
+      console.error('Splash setup failed, showing page normally:', err);
+      forceReveal();
+    }
+  } else {
+    profileBtn.setAttribute('aria-label', 'Go to blog.ashiqur.in');
+  }
+})();
+</script>
+
+</body>
+</html>
